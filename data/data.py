@@ -20,6 +20,17 @@ class Database:
         cur.execute(sql, block_tup)
         self.conn.commit()
 
+    def _save_block_data_batch(self, blocks: list[Block]):
+        sql = f"""INSERT INTO blocks(hash, number, timestamp) 
+                VALUES(?,?,?)
+        """
+        block_tups = []
+        for block in blocks:
+            block_tups.append((block.hash, block.number, block.timestamp))
+        cur = self.conn.cursor()
+        cur.executemany(sql, block_tups)
+        self.conn.commit()
+
     def _save_transaction_data(self, transaction: Transaction):
         sql = f"""INSERT INTO transactions(hash, blockHash, blockNumber, t_from, t_to, value) 
                 VALUES(?,?,?,?,?,?)
@@ -74,7 +85,9 @@ class Database:
         self._create_table(transactions_sql_command)
 
     def _print_transactions(self):
+        pd.set_option('display.max_columns', None)
+        # print(pd.read_sql_query("SELECT * FROM transactions", self.conn))
         print(pd.read_sql_query("SELECT * FROM transactions", self.conn))
 
     def _print_blocks(self):
-        print(pd.read_sql_query("SELECT * FROM blocks", self.conn))
+        print(pd.read_sql_query("SELECT * FROM blocks ORDER BY timestamp", self.conn))
