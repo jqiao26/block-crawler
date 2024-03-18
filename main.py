@@ -12,7 +12,7 @@ def main(args=None):
             res = get_largest_block_volume(
                 args.file_path, "2024-01-01 00:00:00", "2024-01-01 00:30:00"
             )
-            print(f"Largest block volume {res}")
+            print(f"Largest block and value transferred {res}")
     except Exception as e:
         print(e)
     if args.debug:

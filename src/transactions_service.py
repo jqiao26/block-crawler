@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 WEI_ETHER_CONVERSION = 10**-18
+NUM_WORKERS = 2
 
 
 class TransactionsService:
@@ -18,11 +19,13 @@ class TransactionsService:
         self.endpoint = endpoint
 
         blocks = [b for b in range(int(block_start), int(block_end) + 1)]
-        batches = [blocks[i : i + 3] for i in range(0, len(blocks), 3)]
+        batches = [
+            blocks[i : i + NUM_WORKERS] for i in range(0, len(blocks), NUM_WORKERS)
+        ]
         results: list[Block] = []
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
             for batch in batches:
-                print(batch)
+                print("Processing blocks: ", batch)
                 futures = [
                     executor.submit(
                         self.block_fetch_helper, self._string_to_hex(str(block))
