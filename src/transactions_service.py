@@ -1,4 +1,3 @@
-from itertools import islice
 import json
 import requests
 from data.data import Database
@@ -17,35 +16,24 @@ class TransactionsService:
     def save_transactions_by_block_range(self, endpoint, block_range):
         block_start, block_end = self._parse_block_range(block_range)
         self.endpoint = endpoint
+
         blocks = [b for b in range(int(block_start), int(block_end) + 1)]
-        results = []
-
-        # for block_id in range(
-        #     int(block_start), int(block_end) + 1
-        # ):  # iterate through each block
-        #     print("Saving block ", block_id)
-        #     block_hex = self._string_to_hex(str(block_id))
-        #     raw_block_data = self.fetch_block_data(block_hex)
-        #     block = self._parse_block(raw_block_data)
-        #     if not block:
-        #         continue
-        #     self.db._save_block_data(block)
-        #     transactions = self._parse_transaction(block.transactions)
-        #     for transaction in transactions:
-        #         self.db._save_transaction_data(transaction)
-
         batches = [blocks[i : i + 3] for i in range(0, len(blocks), 3)]
-
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            for batch in batches:  # iterate through each block
+        results: list[Block] = []
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            for batch in batches:
                 print(batch)
-                futures = [executor.submit(self.block_fetch_helper, self._string_to_hex(str(block))) for block in batch]
+                futures = [
+                    executor.submit(
+                        self.block_fetch_helper, self._string_to_hex(str(block))
+                    )
+                    for block in batch
+                ]
                 results += [future.result() for future in futures if future.result()]
         self.db._save_block_data_batch(results)
         for block_result in results:
             transactions = self._parse_transaction(block_result.transactions)
-            for transaction in transactions:
-                self.db._save_transaction_data(transaction)
+            self.db._save_transaction_data_batch(transactions)
         self.db._print_blocks()
         self.db._print_transactions()
 
@@ -67,7 +55,9 @@ class TransactionsService:
         headers = {"Content-Type": "application/json"}
 
         try:
-            response = requests.request("POST", self.endpoint, headers=headers, data=payload)
+            response = requests.request(
+                "POST", self.endpoint, headers=headers, data=payload
+            )
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
         except requests.exceptions.ConnectionError as errc:
@@ -75,15 +65,15 @@ class TransactionsService:
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
         except requests.exceptions.RequestException as err:
-            print("Unhandled", err)
+            print("Unhandled Error", err)
 
-        if 'result' not in response.json():
-            print('No result found')
+        if "result" not in response.json():
+            print(response.json(), "No result found")
             return None
 
         return response.json()["result"]
 
-    def _parse_block(self, raw_block_data):        
+    def _parse_block(self, raw_block_data):
         block = Block(
             raw_block_data["hash"],
             raw_block_data["number"],

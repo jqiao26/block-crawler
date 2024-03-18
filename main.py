@@ -1,7 +1,23 @@
 import os
 import argparse
 from src.transactions_service import TransactionsService
-from data.query_database import get_largest_block_volume
+from data.block_volume_query import get_largest_block_volume
+
+
+def main(args=None):
+    try:
+        ts = TransactionsService(args.file_path)
+        ts.save_transactions_by_block_range(args.endpoint, args.block_range)
+        if args.run_part_two:
+            res = get_largest_block_volume(
+                args.file_path, "2024-01-01 00:00:00", "2024-01-01 00:30:00"
+            )
+            print(f"Largest block volume {res}")
+    except Exception as e:
+        print(e)
+    if args.debug:
+        os.remove(args.file_path)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -14,16 +30,5 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true")
 
     args = parser.parse_args()
-    try:
-      ts = TransactionsService(args.file_path)
-      ts.save_transactions_by_block_range(args.endpoint, args.block_range)
-      if args.run_part_two:
-        res = get_largest_block_volume(
-            args.file_path, "2024-01-01 00:00:00", "2024-01-01 00:30:00"
-        )
-        print(f"Largest block volume {res}")
-    except Exception as e:
-      print(e)
-      if args.debug:
-        os.remove(args.file_path)
-      
+
+    main(args)

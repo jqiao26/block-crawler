@@ -1,11 +1,9 @@
 import mock
 import pytest
 import requests_mock
-import requests
 from models.block import Block
 
 from src.transactions_service import TransactionsService
-from data.data import Database
 
 
 class MockResponse:
