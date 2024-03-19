@@ -27,7 +27,7 @@ def get_largest_block_volume(file_path, start_date: str, end_date: str):
     cursor = db.conn.execute(transaction_query)
     maximum_transaction = cursor.fetchone()
     if not maximum_transaction:
-        return -1
+        return (-1, float("-inf"))
     block_number, max_value = (
         _convert_hex_to_int(maximum_transaction[0]),
         maximum_transaction[1],

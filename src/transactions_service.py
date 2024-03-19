@@ -7,23 +7,23 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 WEI_ETHER_CONVERSION = 10**-18
-NUM_WORKERS = 2
 
 
 class TransactionsService:
     def __init__(self, file_path):
         self.db = Database(file_path)
 
-    def save_transactions_by_block_range(self, endpoint, block_range):
+    def save_transactions_by_block_range(self, endpoint, block_range, num_workers):
         block_start, block_end = self._parse_block_range(block_range)
         self.endpoint = endpoint
 
         blocks = [b for b in range(int(block_start), int(block_end) + 1)]
         batches = [
-            blocks[i : i + NUM_WORKERS] for i in range(0, len(blocks), NUM_WORKERS)
+            blocks[i : i + num_workers] for i in range(0, len(blocks), num_workers)
         ]
         results: list[Block] = []
-        with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+        print(f"Starting processing with {num_workers} workers")
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
             for batch in batches:
                 print("Processing blocks: ", batch)
                 futures = [
@@ -63,16 +63,20 @@ class TransactionsService:
             )
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
+            raise err
         except requests.exceptions.ConnectionError as errc:
             print("Error Connecting:", errc)
+            raise err
         except requests.exceptions.Timeout as errt:
             print("Timeout Error:", errt)
+            raise err
         except requests.exceptions.RequestException as err:
             print("Unhandled Error", err)
+            raise err
 
         if "result" not in response.json():
             print(response.json(), "No result found")
-            return None
+            raise err
 
         return response.json()["result"]
 
