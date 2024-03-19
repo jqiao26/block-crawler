@@ -28,7 +28,7 @@ In the `/data` folder, there are two files:
 
 The first file is `data.py`, which contains a `Database` class that is used throughout the project. In the `init` function, a connection is made to the SQLite database with the path provided, and the `init_tables()` function prepares all the necessary tables; `blocks` and `transactions`. In the `transactions` table, I introduced a foreign key `blockHash` from the `blocks` table so that I can relate any `transaction` back to its corresponding block.
 
-The other functions in the file include helper functions to insert `transaction`s and `block`s to the database (both single and in batches) as well as helper functions to print the `blocks` and `transactions` tables that helped me debug and understand the data.
+The other functions in the file include helper functions to insert transactions and blocks to the database (both single and in batches) as well as helper functions to print the `blocks` and `transactions` tables that helped me debug and understand the data.
 
 ### `block_volume_query.py`
 
@@ -40,7 +40,7 @@ Part 2 was done in the `block_volume_query.py` file. It initializes a `Database`
 
 The `transaction` query selects the `block` number and sum of the `transactions` ordered by sorted values (desc) and gets the max transferred value by using limit 1. A left join was used to get the records from the `transaction`s table where the foreign key `blockHash` matched the `block`'s `hash` key. The timestamp was filtered in the `blocks` table to be between `start_hex` and `end_hex` inclusive.
 
-After executing the SQL command, I used `cursor.fetchone()` to get the max value transferred,otherwise setting it to a default tuple `(-1, float('-inf')`. The return type from the script is a tuple including the block number and its associated sum of transaction values (amount transferred).
+After executing the SQL command, I used `cursor.fetchone()` to get the max value transferred,otherwise setting it to a default tuple `(-1, float('-inf'))`. The return type from the script is a tuple including the block number and its associated sum of transaction values (amount transferred).
 
 ## Models Section
 
