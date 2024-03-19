@@ -29,10 +29,6 @@ def mock_api():
         yield m
 
 
-def test_save_transactions_by_block_range():
-    pass
-
-
 def test_fetch_block_data_success(mock_transactions_service, mock_api):
     endpoint = "http://test-endpoint/"
     mock_result = 2
@@ -40,10 +36,6 @@ def test_fetch_block_data_success(mock_transactions_service, mock_api):
     mock_api.post(endpoint, json=mock_data)
     res = mock_transactions_service.fetch_block_data("123")
     assert res == mock_result
-
-
-def test_fetch_block_data_http_error():
-    pass
 
 
 def test__parse_block(mock_transactions_service):
@@ -63,10 +55,6 @@ def test__parse_block(mock_transactions_service):
     assert res.number == number
     assert res.timestamp == timestamp
     assert res.transactions == transactions
-
-
-def test__parse_transaction():
-    pass
 
 
 def test__parse_block_range(mock_transactions_service):
