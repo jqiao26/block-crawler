@@ -40,7 +40,7 @@ Part 2 was done in the `block_volume_query.py` file. It initializes a `Database`
 
 The `transaction` query selects the `block` number and sum of the `transactions` ordered by sorted values (desc) and gets the max transferred value by using limit 1. A left join was used to get the records from the `transaction`s table where the foreign key `blockHash` matched the `block`'s `hash` key. The timestamp was filtered in the `blocks` table to be between `start_hex` and `end_hex` inclusive.
 
-After executing the SQL command, I used `cursor.fetchone()` to get the max value transferred (otherwise setting it to -1). The return type from the script is a tuple including the block number and its associated sum of transaction values (amount transferred).
+After executing the SQL command, I used `cursor.fetchone()` to get the max value transferred,otherwise setting it to a default tuple `(-1, float('-inf')`. The return type from the script is a tuple including the block number and its associated sum of transaction values (amount transferred).
 
 ## Models Section
 
