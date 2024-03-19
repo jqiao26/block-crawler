@@ -56,5 +56,6 @@ The `test_transactions_service.py` file tested everything in the transactions se
 
 - I added the converted ether value directly to the Transaction table so that conversion was not necessary afterwards
 - Assumed date ranges to be processed in UTC, as standard
+- There were a lot of columns in the `transactions` table that were not used in either part 1 and part 2. This was kept in the db and assumed to be used in possible future parts.
 
 NOTE: The `result.txt` file contains the resulting block number and the total volume from Part 2
