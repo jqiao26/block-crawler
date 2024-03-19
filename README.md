@@ -2,7 +2,7 @@
 
 ## Running the Code
 
-The code is run by calling main as follows: `python3 main.py https://smart-frosty-sun.quiknode.pro/413ba230cbf8c88dd6e2bfd9ecb0a8d645f6d801/ sqlite\\db\\database.db 18908800-18909050`.
+The code is run by calling main as follows: `python3 main.py https://smart-frosty-sun.quiknode.pro/<KEY>/ sqlite\\db\\database.db 18908800-18909050`.
 
 Some additional arguments were created mainly for testing purposes including optionally running part 2 or adding debug which helped clean up the database after running and testing.`
 
